@@ -35,7 +35,7 @@ export default function App() {
   return (
     <>
       <Page />
-      <div style={{ background: '#120c05', padding: '14px 0 26px', textAlign: 'center', fontSize: 10, letterSpacing: '.28em', textTransform: 'uppercase', color: 'rgba(90,75,50,.65)', fontFamily: "'Jost', sans-serif" }}>
+      <div style={{ background: '#120c05', padding: '14px 0 26px', textAlign: 'center', fontSize: 10, letterSpacing: '.28em', textTransform: 'uppercase', color: 'rgba(214,190,140,.6)', fontFamily: "'Jost', sans-serif" }}>
         <Credit />
       </div>
     </>
