@@ -1,5 +1,5 @@
 /* ============================================================
-   Sunny Philip & Anitta Varghese — Wedding Invitation
+   దేవరం తేజ & యాండవ రెబెక్కా — Wedding Invitation
    Cinematic flow controller
    Landing cover → invitation video → hero → scroll journey
    ============================================================ */
@@ -248,7 +248,7 @@
 
   var HERO_CANDIDATES = (
     (heroImg && heroImg.getAttribute('data-candidates')) ||
-    'assets/images/hero/hero-alt.png,assets/images/hero/hero.png,assets/images/hero/hero.webp,assets/images/hero/hero.avif'
+    'assets/images/hero/hero-celestial.png?v=4,assets/images/hero/hero-opt.png?v=4,assets/images/hero/hero-alt.png?v=4,assets/images/hero/hero.png?v=4'
   ).split(',').map(function (s) { return s.trim(); }).filter(Boolean);
 
   function loadAndDecodeUrl(url) {
@@ -634,7 +634,7 @@
      --------------------------------------------------------- */
   (function countdown() {
     /* Betrothal: Wednesday 26 August 2026 at 12:00 Noon IST (UTC+5:30) */
-    var target = new Date('2026-08-26T12:00:00+05:30').getTime();
+    var target = new Date('2026-11-18T10:30:00+05:30').getTime();
     var d = document.getElementById('cdD'),
         h = document.getElementById('cdH'),
         m = document.getElementById('cdM'),
@@ -652,7 +652,7 @@
       }
       var sec = Math.floor(left / 1000);
       d.textContent = pad(Math.floor(sec / 86400));
-      h.textContent = pad(Math.floor(sec / 3600) % 24);
+      h.textContent = pad(Math.floor((sec % 86400) / 3600));
       m.textContent = pad(Math.floor(sec / 60) % 60);
       s.textContent = pad(sec % 60);
     }

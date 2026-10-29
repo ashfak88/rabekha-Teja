@@ -1,44 +1,541 @@
-// Markup of the invitation (converted from the original page).
+import { useState, useEffect } from 'react';
+
+const WEDDING_DATE_ISO = '2026-11-18T10:30:00+05:30';
+
+function useCountdown(targetIso) {
+  const calculate = () => {
+    const target = new Date(targetIso).getTime();
+    const diff = target - Date.now();
+    if (isNaN(diff) || diff <= 0) {
+      return { days: '00', hours: '00', minutes: '00', seconds: '00' };
+    }
+    const sec = Math.floor(diff / 1000);
+    const pad = (n) => (n < 10 ? '0' + n : String(n));
+    return {
+      days: pad(Math.floor(sec / 86400)),
+      hours: pad(Math.floor((sec % 86400) / 3600)),
+      minutes: pad(Math.floor((sec % 3600) / 60)),
+      seconds: pad(sec % 60),
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculate);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculate());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [targetIso]);
+
+  return timeLeft;
+}
+
 export default function Page() {
+  const timeLeft = useCountdown(WEDDING_DATE_ISO);
   return (
     <>
+      <svg className="sprite" aria-hidden="true" focusable="false">
+        <defs>
+          <symbol id="i-cross" viewBox="0 0 64 64"><path d="M32 8v48M16 20h32"></path></symbol>
+          <symbol id="i-rose" viewBox="0 0 64 64"><path d="M32 52C22 44 12 36 12 26a20 20 0 0140 0c0 10-10 18-20 26z"></path><path d="M32 26c0-6 4-10 8-10M32 26c0-6-4-10-8-10M32 26v26"></path><circle cx="32" cy="26" r="6"></circle></symbol>
+          <symbol id="i-bell" viewBox="0 0 64 64"><circle cx="32" cy="8.5" r="3"></circle><path d="M32 13c-7.2 0-12.4 6.1-12.4 14.3 0 8.2-2.1 12.3-5.1 15.4h35c-3-3.1-5.1-7.2-5.1-15.4C44.4 19.1 39.2 13 32 13z"></path><path d="M27.7 47.4a4.4 4.4 0 008.6 0"></path></symbol>
+          <symbol id="i-leaf" viewBox="0 0 64 64"><path d="M53 9C30.6 11.2 14.2 25.6 12 48c0 4.2 2 6.3 5.2 6.3C37.6 52.1 51 36 53 9z"></path><path d="M53 9L17.2 54.3"></path><path d="M45 16.5l-6.5 14.2M36.8 20.8l-6.5 14.2M28.6 26.4l-5.6 12.6"></path></symbol>
+          <symbol id="i-ring" viewBox="0 0 64 64"><circle cx="23" cy="34" r="14"></circle><circle cx="41" cy="34" r="14"></circle></symbol>
+          <symbol id="i-calendar" viewBox="0 0 64 64"><rect x="9" y="14" width="46" height="42" rx="5"></rect><path d="M9 27h46M21 8v11M43 8v11"></path><circle cx="22" cy="38" r="2.4" fill="currentColor" stroke="none"></circle><circle cx="32" cy="38" r="2.4" fill="currentColor" stroke="none"></circle><circle cx="42" cy="38" r="2.4" fill="currentColor" stroke="none"></circle></symbol>
+          <symbol id="i-clock" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"></circle><path d="M32 17v16l11 7"></path></symbol>
+          <symbol id="i-pin" viewBox="0 0 64 64"><path d="M32 58s18-17.4 18-30A18 18 0 1014 28c0 12.6 18 30 18 30z"></path><circle cx="32" cy="27" r="6.5"></circle></symbol>
+          <symbol id="i-phone" viewBox="0 0 64 64"><path d="M22 8l8 12-6 6c3.4 7 8.6 12.2 15.6 15.6l6-6 12 8-4 8c-1.6 3.2-5 4.6-9 3.6C29 51.6 12.4 35 8.4 17.4 7.4 13.4 8.8 10 12 8.4z"></path></symbol>
+          <symbol id="i-church" viewBox="0 0 64 64"><path d="M32 4v12M26 10h12"></path><path d="M14 56V30l18-14 18 14v26z"></path><path d="M26 56V42h12v14"></path><path d="M14 30H8l24-20 24 20h-6"></path></symbol>
+          <symbol id="i-car" viewBox="0 0 64 64"><path d="M8 38h48M14 28l4-10h24l4 10"></path><rect x="8" y="28" width="48" height="16" rx="4"></rect><circle cx="18" cy="46" r="5"></circle><circle cx="46" cy="46" r="5"></circle><path d="M8 34H4v6h4M56 34h4v6h-4"></path></symbol>
+          <symbol id="i-heart" viewBox="0 0 64 64"><path d="M32 52L10 30a13 13 0 0122-14 13 13 0 0122 14z"></path></symbol>
+          <symbol id="i-pillar" viewBox="0 0 64 64"><path d="M12 12h40M15 20h34M20 20v28M44 20v28M15 48h34M11 56h42"></path></symbol>
+        </defs>
+      </svg>
 
+      <canvas id="particles" aria-hidden="true"></canvas>
 
+      <div id="scroll-progress" aria-hidden="true"></div>
 
-<svg className="sprite" aria-hidden="true" focusable="false"><defs><symbol id="i-cross" viewBox="0 0 64 64"><path d="M32 8v48M16 20h32"></path></symbol><symbol id="i-rose" viewBox="0 0 64 64"><path d="M32 52C22 44 12 36 12 26a20 20 0 0140 0c0 10-10 18-20 26z"></path><path d="M32 26c0-6 4-10 8-10M32 26c0-6-4-10-8-10M32 26v26"></path><circle cx="32" cy="26" r="6"></circle></symbol><symbol id="i-bell" viewBox="0 0 64 64"><circle cx="32" cy="8.5" r="3"></circle><path d="M32 13c-7.2 0-12.4 6.1-12.4 14.3 0 8.2-2.1 12.3-5.1 15.4h35c-3-3.1-5.1-7.2-5.1-15.4C44.4 19.1 39.2 13 32 13z"></path><path d="M27.7 47.4a4.4 4.4 0 008.6 0"></path></symbol><symbol id="i-leaf" viewBox="0 0 64 64"><path d="M53 9C30.6 11.2 14.2 25.6 12 48c0 4.2 2 6.3 5.2 6.3C37.6 52.1 51 36 53 9z"></path><path d="M53 9L17.2 54.3"></path><path d="M45 16.5l-6.5 14.2M36.8 20.8l-6.5 14.2M28.6 26.4l-5.6 12.6"></path></symbol><symbol id="i-ring" viewBox="0 0 64 64"><circle cx="23" cy="34" r="14"></circle><circle cx="41" cy="34" r="14"></circle></symbol><symbol id="i-calendar" viewBox="0 0 64 64"><rect x="9" y="14" width="46" height="42" rx="5"></rect><path d="M9 27h46M21 8v11M43 8v11"></path><circle cx="22" cy="38" r="2.4" fill="currentColor" stroke="none"></circle><circle cx="32" cy="38" r="2.4" fill="currentColor" stroke="none"></circle><circle cx="42" cy="38" r="2.4" fill="currentColor" stroke="none"></circle></symbol><symbol id="i-clock" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"></circle><path d="M32 17v16l11 7"></path></symbol><symbol id="i-pin" viewBox="0 0 64 64"><path d="M32 58s18-17.4 18-30A18 18 0 1014 28c0 12.6 18 30 18 30z"></path><circle cx="32" cy="27" r="6.5"></circle></symbol><symbol id="i-phone" viewBox="0 0 64 64"><path d="M22 8l8 12-6 6c3.4 7 8.6 12.2 15.6 15.6l6-6 12 8-4 8c-1.6 3.2-5 4.6-9 3.6C29 51.6 12.4 35 8.4 17.4 7.4 13.4 8.8 10 12 8.4z"></path></symbol><symbol id="i-church" viewBox="0 0 64 64"><path d="M32 4v12M26 10h12"></path><path d="M14 56V30l18-14 18 14v26z"></path><path d="M26 56V42h12v14"></path><path d="M14 30H8l24-20 24 20h-6"></path></symbol><symbol id="i-car" viewBox="0 0 64 64"><path d="M8 38h48M14 28l4-10h24l4 10"></path><rect x="8" y="28" width="48" height="16" rx="4"></rect><circle cx="18" cy="46" r="5"></circle><circle cx="46" cy="46" r="5"></circle><path d="M8 34H4v6h4M56 34h4v6h-4"></path></symbol><symbol id="i-heart" viewBox="0 0 64 64"><path d="M32 52L10 30a13 13 0 0122-14 13 13 0 0122 14z"></path></symbol><symbol id="i-pillar" viewBox="0 0 64 64"><path d="M12 12h40M15 20h34M20 20v28M44 20v28M15 48h34M11 56h42"></path></symbol></defs></svg>
+      {/* 1 · LANDING COVER */}
+      <section id="landing" className="scene--screen" aria-label="వివాహ ఆహ్వాన పత్రిక">
+        <div className="landing-media">
+          <img id="coverImg" className="cover-img section-bg" src="assets/images/cover/cover.png" data-fallbacks="assets/images/cover/cover.webp,assets/images/cover/cover.jpg" alt="" decoding="async" fetchPriority="high" />
+          <div className="cover-fallback" aria-hidden="true"></div>
+        </div>
+        <div className="rays rays--warm" aria-hidden="true"></div>
+        <div className="vignette" aria-hidden="true"></div>
+        <div className="temple-glow" aria-hidden="true"></div>
+        <div className="section-overlay landing-overlay" aria-hidden="true"></div>
+        <div className="landing-inner">
+          <p className="landing-eyebrow"><span className="en">సర్వేశ్వరుని దివ్య ఆశీస్సులతో</span></p>
+          <div className="divider divider--sm" aria-hidden="true">
+            <span className="divider-line"></span>
+            <svg className="ico" aria-hidden="true"><use href="#i-ring"></use></svg>
+            <span className="divider-line"></span>
+          </div>
+          <h1 className="landing-names">
+            <span className="n">దేవరం తేజ</span>
+            <span className="amp">{"&"}</span>
+            <span className="n">యాండవ రెబెక్కా</span>
+          </h1>
+          <p className="landing-date">18 · 11 · 2026</p>
+          <button id="openBtn" className="btn-open" type="button">
+            <span className="btn-open__glow" aria-hidden="true"></span>
+            <span className="btn-open__ring" aria-hidden="true"></span>
+            <span className="btn-open__inner">
+              <svg className="ico btn-open__lamp" aria-hidden="true"><use href="#i-ring"></use></svg>
+              <span className="btn-open__label"><span className="btn-open__en">ఆహ్వాన పత్రికను తెరవండి</span></span>
+            </span>
+            <span className="btn-open__shimmer" aria-hidden="true"></span>
+          </button>
+          <p className="landing-hint" aria-hidden="true">ప్రారంభించడానికి నొక్కండి</p>
+        </div>
+      </section>
 
+      {/* 2 · REVEAL VIDEO */}
+      <section id="reveal" aria-hidden="true">
+        <video id="revealVideo" muted playsInline webkit-playsinline="" preload="auto" disablePictureInPicture="" controlsList="nodownload noplaybackrate noremoteplayback">
+          <source src="assets/video/invitation-reveal.mp4" type="video/mp4" />
+        </video>
+        <div className="reveal-fade" aria-hidden="true"></div>
+        <button id="skipBtn" className="btn-skip" type="button" hidden>దాటవేయి</button>
+      </section>
 
+      {/* 3 · MAIN SITE */}
+      <main id="site">
+        {/* HERO */}
+        <section id="hero" className="scene scene--screen scene--hero" aria-busy="true">
+          <picture className="section-bg">
+            <source id="heroSourceAvif" type="image/avif" data-hero-srcset="assets/images/hero/hero.avif" />
+            <source id="heroSourceWebp" type="image/webp" data-hero-srcset="assets/images/hero/hero.webp" />
+            <img id="heroImg" className="section-bg" data-candidates="assets/images/hero/hero-celestial.png?v=4,assets/images/hero/hero-opt.png?v=4,assets/images/hero/hero-alt.png?v=4,assets/images/hero/hero.png?v=4" alt="దేవరం తేజ & యాండవ రెబెక్కా" width="1080" height="1920" decoding="async" fetchPriority="high" />
+          </picture>
+          <div className="section-overlay" aria-hidden="true"></div>
+          <p className="hero-bless hero-bless--top"><span className="hero-bless__en">సర్వేశ్వరుని దివ్య ఆశీస్సులతో</span></p>
+          <div className="section-content">
+            <div className="divider divider--sm hero-divider" aria-hidden="true">
+              <span className="divider-line"></span>
+              <svg className="ico" aria-hidden="true" style={{ width: "20px", height: "20px" }}><use href="#i-cross"></use></svg>
+              <span className="divider-line"></span>
+            </div>
+            <h1 className="hero-names">
+              <span className="hero-names__n">దేవరం తేజ</span>
+              <span className="hero-names__amp" aria-hidden="true">{"&"}</span>
+              <span className="hero-names__n">యాండవ రెబెక్కా</span>
+            </h1>
+            <p className="hero-date"><span className="hero-date__en">బుధవారం · 18 నవంబర్ 2026</span></p>
+          </div>
+          <p className="hero-subtitle">జె. నాగేంద్ర రావు, వరలక్ష్మి కళ్యాణ వేదిక, నూజివీడు &nbsp;·&nbsp; ఉదయం 10:30 గంటలకు</p>
+          <a className="scroll-indicator" href="#details" aria-label="వివాహ వివరాలకు క్రిందికి స్క్రోల్ చేయండి">
+            <span className="scroll-indicator__word">SCROLL</span>
+            <svg className="scroll-indicator__arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 5v14M5 13l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+            </svg>
+          </a>
+        </section>
 
-<canvas id="particles" aria-hidden="true"></canvas>
+        {/* VERSE / BLESSING */}
+        <section id="verse" className="scene scene--flow scene--ivory">
+          <img className="section-bg" src="assets/images/decorations/wash-ivory.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content section-content--center">
+            <div className="verse-card reveal">
+              <svg className="ico verse-cross" aria-hidden="true"><use href="#i-heart"></use></svg>
+              <blockquote className="verse-text">
+                {" \"రెండు మనసులు, రెండు కుటుంబాలు ఒక్కటయ్యే పవిత్ర కల్యాణ బంధం"}<br />
+                {"దేవుని ఆశీస్సులతో నూతన దాంపత్య జీవితం కలకాలం సుఖసంతోషాలతో వర్ధిల్లుగాక!\" "}
+              </blockquote>
+              <cite className="verse-ref">— పవిత్ర పరిణయ శుభాకాంక్షలు</cite>
+              <div className="divider divider--sm" style={{ marginTop: "24px" }} aria-hidden="true">
+                <span className="divider-line"></span>
+                <svg className="ico" aria-hidden="true"><use href="#i-leaf"></use></svg>
+                <span className="divider-line"></span>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        {/* DETAILS */}
+        <section id="details" className="scene scene--flow scene--beige">
+          <img className="section-bg" src="assets/images/decorations/wash-beige.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content">
+            <div className="sec-head reveal">
+              <p className="kicker">శుభ ఆహ్వానం</p>
+              <h2 className="sec-title">వివాహ మహోత్సవ వివరాలు</h2>
+              <div className="divider" aria-hidden="true">
+                <span className="divider-line"></span>
+                <svg className="ico" aria-hidden="true"><use href="#i-ring"></use></svg>
+                <span className="divider-line"></span>
+              </div>
+            </div>
+            <p className="lede reveal" data-delay="1">
+              {"శ్రీయుతులు దేవరం మురళీ మోహన్ రావు & శ్రీమతి వాణి గార్ల కుమారుడు "}
+              <em>దేవరం తేజ</em>
+              {" మరియు శ్రీయుతులు యాండవ రాజారావు & శ్రీమతి నళిని గార్ల కుమార్తె "}
+              <em>యాండవ రెబెక్కా</em>
+              {" ల పవిత్ర వివాహ మహోత్సవ శుభ సందర్భంగా, మీరందరూ సకుటుంబ సమేతంగా విచ్చేసి, నూతన వధూవరులను నిండు మనస్సుతో ఆశీర్వదించి మమ్మల్ని ఆనందింపజేయవలసిందిగా సాదరంగా ఆహ్వానిస్తున్నాము."}
+            </p>
+            <ul className="facts">
+              <li className="fact reveal" data-delay="1">
+                <svg className="ico" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                <span className="fact-k">వివాహ తేది</span>
+                <span className="fact-v">బుధవారం, 18 నవంబర్ 2026</span>
+                <span className="fact-s">18th November 2026</span>
+              </li>
+              <li className="fact reveal" data-delay="2">
+                <svg className="ico" aria-hidden="true"><use href="#i-clock"></use></svg>
+                <span className="fact-k">శుభ ముహూర్తం</span>
+                <span className="fact-v">ఉదయం 10:30 గంటలకు</span>
+                <span className="fact-s">సుముహూర్తం</span>
+              </li>
+              <li className="fact reveal" data-delay="3">
+                <svg className="ico" aria-hidden="true"><use href="#i-church"></use></svg>
+                <span className="fact-k">కళ్యాణ వేదిక</span>
+                <span className="fact-v">జె. నాగేంద్ర రావు, వరలక్ష్మి కళ్యాణ వేదిక</span>
+                <span className="fact-s">కొన్నంగుంట రోడ్డు, నూజివీడు</span>
+              </li>
+              <li className="fact reveal" data-delay="4">
+                <svg className="ico" aria-hidden="true"><use href="#i-bell"></use></svg>
+                <span className="fact-k">వివాహ రిసెప్షన్</span>
+                <span className="fact-v">శుక్రవారం, 20 నవంబర్ 2026</span>
+                <span className="fact-s">ఉదయం 10:00 గం. · కె కన్వెన్షన్, విజయవాడ</span>
+              </li>
+            </ul>
+            <div className="countdown-block reveal" data-delay="2">
+              <div className="countdown-header">
+                <p className="countdown-kicker">వివాహ మహోత్సవ ముహూర్తం</p>
+                <h3 className="countdown-target">బుధవారం, 18 నవంబర్ 2026 · ఉదయం 10:30 గంటలకు</h3>
+                <p className="countdown-sub">కల్యాణ ఘడియలకు మిగిలిన సమయం (Countdown to Wedding)</p>
+              </div>
+              <div className="countdown" aria-label="వివాహ దినానికి మిగిలిన సమయం">
+                <div className="cd-unit"><span className="cd-n" id="cdD">{timeLeft.days}</span><span className="cd-l">రోజులు</span></div>
+                <span className="cd-sep" aria-hidden="true"></span>
+                <div className="cd-unit"><span className="cd-n" id="cdH">{timeLeft.hours}</span><span className="cd-l">గంటలు</span></div>
+                <span className="cd-sep" aria-hidden="true"></span>
+                <div className="cd-unit"><span className="cd-n" id="cdM">{timeLeft.minutes}</span><span className="cd-l">నిమిషాలు</span></div>
+                <span className="cd-sep" aria-hidden="true"></span>
+                <div className="cd-unit"><span className="cd-n" id="cdS">{timeLeft.seconds}</span><span className="cd-l">సెకన్లు</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        {/* TIMELINE */}
+        <section id="timeline" className="scene scene--flow scene--ivory">
+          <img className="section-bg" src="assets/images/decorations/wash-ivory.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content">
+            <div className="sec-head reveal">
+              <p className="kicker">శుభ వేడుకలు</p>
+              <h2 className="sec-title">కార్యక్రమ ప్రణాళిక</h2>
+              <div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-heart"></use></svg><span className="divider-line"></span></div>
+            </div>
+            <ol className="tl">
+              <li className="tl-item reveal" data-delay="1">
+                <span className="tl-node tl-node--hi" aria-hidden="true"><svg className="ico"><use href="#i-ring"></use></svg></span>
+                <div className="tl-body">
+                  <p className="tl-date">బుధవారం, 18 నవంబర్ 2026</p>
+                  <h3 className="tl-title">వివాహ మహోత్సవం</h3>
+                  <p className="tl-meta">ఉదయం 10:30 గంటలకు · జె. నాగేంద్ర రావు, వరలక్ష్మి కళ్యాణ వేదిక</p>
+                  <p className="tl-text">{"పెద్దల ఆశీస్సులు, బంధుమిత్రుల సమక్షంలో దేవరం తేజ మరియు యాండవ రెబెక్కా ల పవిత్ర పరిణయ మహోత్సవం జరుగనున్నది."}</p>
+                  <div className="tl-actions">
+                    <a className="btn btn--gold btn--sm" target="_blank" rel="noopener" href="https://maps.google.com/?q=Varalakshmi+Kalyana+Vedhika+Konnamgunta+Road+Nuzvid">
+                      <svg className="ico"><use href="#i-pin"></use></svg>{" వేదిక లొకేషన్ చూడండి "}
+                    </a>
+                  </div>
+                </div>
+              </li>
+              <li className="tl-item reveal" data-delay="2">
+                <span className="tl-node" aria-hidden="true"><svg className="ico"><use href="#i-bell"></use></svg></span>
+                <div className="tl-body">
+                  <p className="tl-date">శుక్రవారం, 20 నవంబర్ 2026</p>
+                  <h3 className="tl-title">వధువు తరపున వివాహ రిసెప్షన్</h3>
+                  <p className="tl-meta">ఉదయం 10:00 గంటలకు · కె కన్వెన్షన్, ప్రశాంతి నగర్, విజయవాడ</p>
+                  <p className="tl-text">{"వధువు కుటుంబ సభ్యుల సమక్షంలో ఏర్పాటు చేయబడిన ఆత్మీయ విందు మరియు రిసెప్షన్ వేడుక. మీరందరూ విచ్చేసి నూతన వధూవరులను దీవించగలరు."}</p>
+                  <div className="tl-actions">
+                    <a className="btn btn--gold btn--sm" target="_blank" rel="noopener" href="https://maps.google.com/?q=K+convention+prashanthi+nagar+vijayawada">
+                      <svg className="ico"><use href="#i-pin"></use></svg>{" వేదిక లొకేషన్ చూడండి "}
+                    </a>
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </section>
 
-<div id="scroll-progress" aria-hidden="true"></div>
+        {/* COUPLE */}
+        <section id="couple" className="scene scene--flow scene--dark">
+          <img className="section-bg" src="assets/images/decorations/wash-dark.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content">
+            <div className="sec-head reveal">
+              <h2 className="sec-title">{"వధూవరులు"}</h2>
+              <div className="divider divider--light" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-ring"></use></svg><span className="divider-line"></span></div>
+            </div>
+            <div className="couple-photo-wrap reveal">
+              <div className="couple-photo-frame">
+                <img className="couple-photo-img" loading="lazy" decoding="async" src="assets/images/gallery/couple-teja-rebakha.jpg" data-fallbacks="assets/images/gallery/Couple.jpeg,assets/images/gallery/Couple.jpg" data-placeholder="తేజ & రెబెక్కా" alt="దేవరం తేజ మరియు యాండవ రెబెక్కా" />
+                <span className="couple-photo-ring" aria-hidden="true"></span>
+              </div>
+            </div>
+            <div className="couple-grid">
+              <article className="person reveal" data-delay="1">
+                <p className="person-role">వధువు</p>
+                <h3 className="person-name">యాండవ రెబెక్కా</h3>
+                <p className="person-line">శ్రీ యాండవ రాజారావు<br />{" & శ్రీమతి యాండవ నళిని గార్ల సుపుత్రిక"}</p>
+                <p className="person-place">సోదరుడు: యాండవ ప్రదీప్<br />యాండవ కుటుంబం</p>
+              </article>
+              <div className="couple-knot" aria-hidden="true">
+                <span className="couple-initial">రె</span>
+                <svg className="ico" aria-hidden="true"><use href="#i-ring"></use></svg>
+                <span className="couple-initial">తే</span>
+              </div>
+              <article className="person reveal" data-delay="2">
+                <p className="person-role">వరుడు</p>
+                <h3 className="person-name">దేవరం తేజ</h3>
+                <p className="person-line">శ్రీ దేవరం మురళీ మోహన్ రావు<br />{" & శ్రీమతి దేవరం వాణి గార్ల సుపుత్రుడు"}</p>
+                <p className="person-place">దేవరం కుటుంబం</p>
+              </article>
+            </div>
+          </div>
+        </section>
 
+        {/* FAMILY */}
+        <section id="family" className="scene scene--flow scene--beige">
+          <img className="section-bg" src="assets/images/decorations/wash-beige.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content">
+            <div className="sec-head reveal">
+              <p className="kicker">{"ప్రేమానురాగాలతో"}</p>
+              <h2 className="sec-title">{"తల్లిదండ్రులు & కుటుంబం"}</h2>
+              <div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-pillar"></use></svg><span className="divider-line"></span></div>
+            </div>
+            <div className="family-grid">
+              <article className="card card--family reveal" data-delay="1">
+                <svg className="ico card-ico" aria-hidden="true"><use href="#i-pillar"></use></svg>
+                <p className="family-tag">{"వరుని కుటుంబం"}</p>
+                <h3 className="family-name">శ్రీ దేవరం మురళీ మోహన్ రావు</h3>
+                <p className="family-amp">{"&"}</p>
+                <h3 className="family-name">శ్రీమతి దేవరం వాణి</h3>
+                <p className="family-home">దేవరం కుటుంబ సభ్యులు</p>
+              </article>
+              <article className="card card--family reveal" data-delay="2">
+                <svg className="ico card-ico" aria-hidden="true"><use href="#i-pillar"></use></svg>
+                <p className="family-tag">{"వధువు కుటుంబం"}</p>
+                <h3 className="family-name">శ్రీ యాండవ రాజారావు</h3>
+                <p className="family-amp">{"&"}</p>
+                <h3 className="family-name">శ్రీమతి యాండవ నళిని</h3>
+                <p className="family-home">సోదరుడు: చి. యాండవ ప్రదీప్<br />యాండవ కుటుంబ సభ్యులు</p>
+              </article>
+            </div>
+            <p className="family-foot reveal" data-delay="3">
+              <svg className="ico" aria-hidden="true"><use href="#i-leaf"></use></svg>
+              {" బంధుమిత్రులు, స్నేహితులు మరియు శ్రేయోభిలాషులందరి హృదయపూర్వక ఆశీస్సులతో... "}
+            </p>
+          </div>
+        </section>
 
+        {/* VENUE */}
+        <section id="venue" className="scene scene--flow scene--ivory">
+          <img className="section-bg" src="assets/images/decorations/wash-ivory.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content">
+            <div className="sec-head reveal">
+              <p className="kicker">దారి & చిరునామా</p>
+              <h2 className="sec-title">{"కళ్యాణ వేదిక & రిసెప్షన్"}</h2>
+              <div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-pin"></use></svg><span className="divider-line"></span></div>
+            </div>
+            <div className="venue-grid">
+              <article className="venue-card reveal" data-delay="1">
+                <div className="venue-map-embed">
+                  <iframe title="జె. నాగేంద్ర రావు, వరలక్ష్మి కళ్యాణ వేదిక, నూజివీడు" src="https://maps.google.com/maps?q=Konnamgunta+Road+Nuzvid+Varalakshmi+Kalyana+Vedhika&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="220" style={{ border: "0", display: "block" }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div className="venue-body">
+                  <p className="venue-tag">వివాహ మహోత్సవం</p>
+                  <h3 className="venue-name">జె. నాగేంద్ర రావు, వరలక్ష్మి కళ్యాణ వేదిక</h3>
+                  <p className="venue-addr">కొన్నంగుంట రోడ్డు<br />నూజివీడు</p>
+                  <p className="venue-when"><svg className="ico"><use href="#i-clock"></use></svg>{" బుధ, 18 నవంబర్ 2026 · ఉదయం 10:30 గంటలకు"}</p>
+                  <div className="venue-actions">
+                    <a className="btn btn--gold" target="_blank" rel="noopener" href="https://maps.google.com/?q=Varalakshmi+Kalyana+Vedhika+Konnamgunta+Road+Nuzvid">
+                      <svg className="ico"><use href="#i-pin"></use></svg>{" గూగుల్ మ్యాప్స్‌లో చూడండి"}
+                    </a>
+                  </div>
+                </div>
+              </article>
+              <article className="venue-card reveal" data-delay="2">
+                <div className="venue-map-embed">
+                  <iframe title="కె కన్వెన్షన్, విజయవాడ" src="https://maps.google.com/maps?q=K+convention+prashanthi+nagar+vijayawada&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="220" style={{ border: "0", display: "block" }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div className="venue-body">
+                  <p className="venue-tag">వధువు తరపున రిసెప్షన్</p>
+                  <h3 className="venue-name">కె కన్వెన్షన్</h3>
+                  <p className="venue-addr">ప్రశాంతి నగర్, రైతు బజార్ ఎదురుగా<br />విజయవాడ</p>
+                  <p className="venue-when"><svg className="ico"><use href="#i-bell"></use></svg>{" శుక్ర, 20 నవంబర్ 2026 · ఉదయం 10:00 గంటలకు"}</p>
+                  <div className="venue-actions">
+                    <a className="btn btn--gold" target="_blank" rel="noopener" href="https://maps.google.com/?q=K+convention+prashanthi+nagar+vijayawada">
+                      <svg className="ico"><use href="#i-pin"></use></svg>{" గూగుల్ మ్యాప్స్‌లో చూడండి"}
+                    </a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
 
-<section id="landing" className="scene--screen" aria-label="Wedding invitation cover"><div className="landing-media"><img id="coverImg" className="cover-img section-bg" src="assets/images/cover/cover.png" data-fallbacks="assets/images/cover/cover.webp,assets/images/cover/cover.jpg" alt="" decoding="async" fetchPriority="high" /><div className="cover-fallback" aria-hidden="true"></div></div><div className="rays rays--warm" aria-hidden="true"></div><div className="vignette" aria-hidden="true"></div><div className="temple-glow" aria-hidden="true"></div><div className="section-overlay landing-overlay" aria-hidden="true"></div><div className="landing-inner"><p className="landing-eyebrow"><span className="en">With the Blessings of God Almighty</span></p><div className="divider divider--sm" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-cross"></use></svg><span className="divider-line"></span></div><h1 className="landing-names"><span className="n">Anitta</span><span className="amp">{"&"}</span><span className="n">Sunny</span></h1><p className="landing-date">26 · 08 · 2026</p><button id="openBtn" className="btn-open" type="button"><span className="btn-open__glow" aria-hidden="true"></span><span className="btn-open__ring" aria-hidden="true"></span><span className="btn-open__inner"><svg className="ico btn-open__lamp" aria-hidden="true"><use href="#i-cross"></use></svg><span className="btn-open__label"><span className="btn-open__en">Open Invitation</span></span></span><span className="btn-open__shimmer" aria-hidden="true"></span></button><p className="landing-hint" aria-hidden="true">Tap to begin</p></div></section>
+        {/* RSVP */}
+        <section id="rsvp" className="scene scene--flow scene--beige">
+          <img className="section-bg" src="assets/images/decorations/wash-beige.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content">
+            <div className="sec-head reveal">
+              <p className="kicker">మీ రాక మాకు ఆనందం</p>
+              <h2 className="sec-title">ఆర్.ఎస్.వి.పి</h2>
+              <div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-heart"></use></svg><span className="divider-line"></span></div>
+              <p className="sec-note" style={{ marginTop: "14px" }}>
+                {"మీ రాకతో నూతన వధూవరులను ఆశీర్వదించండి. మీ వివరాలు తెలియజేయండి."}
+              </p>
+            </div>
+            <div className="rsvp-card reveal" data-delay="1">
+              <div className="rsvp-success" id="rsvpSuccess" hidden>
+                <svg className="ico rsvp-success__ico" aria-hidden="true"><use href="#i-heart"></use></svg>
+                <p className="rsvp-success__title">ధన్యవాదాలు!</p>
+                <p className="rsvp-success__msg">మీ శుభాకాంక్షలు మాకు అందాయి. మీతో కలిసి వేడుకను జరుపుకోవడానికి ఎదురుచూస్తున్నాము.</p>
+              </div>
+              <form id="rsvpForm" className="rsvp-form" noValidate>
+                <div className="rsvp-row">
+                  <div className="rsvp-field">
+                    <label className="rsvp-label" htmlFor="rsvpName">{"పూర్తి పేరు "}<span aria-hidden="true">*</span></label>
+                    <input className="rsvp-input" id="rsvpName" name="name" type="text" placeholder="మీ పూర్తి పేరు" autoComplete="name" required />
+                    <span className="rsvp-err" id="errName" role="alert" hidden></span>
+                  </div>
+                  <div className="rsvp-field">
+                    <label className="rsvp-label" htmlFor="rsvpPhone">{"ఫోన్ నంబర్ "}<span aria-hidden="true">*</span></label>
+                    <input className="rsvp-input" id="rsvpPhone" name="phone" type="tel" placeholder="+91 98852 53999" autoComplete="tel" required />
+                    <span className="rsvp-err" id="errPhone" role="alert" hidden></span>
+                  </div>
+                </div>
+                <div className="rsvp-row">
+                  <div className="rsvp-field">
+                    <label className="rsvp-label" htmlFor="rsvpGuests">{"అతిథుల సంఖ్య "}<span aria-hidden="true">*</span></label>
+                    <select className="rsvp-input rsvp-select" id="rsvpGuests" name="guests" required defaultValue="">
+                      <option value="" disabled>అతిథుల సంఖ్యను ఎంచుకోండి</option>
+                      <option value="1">1 — నేను మాత్రమే</option>
+                      <option value="2">2 గురు</option>
+                      <option value="3">3 గురు</option>
+                      <option value="4">4 గురు</option>
+                      <option value="5">5 గురు</option>
+                      <option value="6+">6 లేదా అంతకంటే ఎక్కువ</option>
+                    </select>
+                    <span className="rsvp-err" id="errGuests" role="alert" hidden></span>
+                  </div>
+                  <div className="rsvp-field">
+                    <label className="rsvp-label">{"విచ్చేస్తున్నారా? "}<span aria-hidden="true">*</span></label>
+                    <div className="rsvp-radio-group" role="radiogroup" aria-label="విచ్చేస్తున్నారా?">
+                      <label className="rsvp-radio">
+                        <input type="radio" name="attending" defaultValue="Yes" required />
+                        <span className="rsvp-radio__mark" aria-hidden="true"></span>
+                        <span>తప్పకుండా వస్తాము!</span>
+                      </label>
+                      <label className="rsvp-radio">
+                        <input type="radio" name="attending" defaultValue="No" />
+                        <span className="rsvp-radio__mark" aria-hidden="true"></span>
+                        <span>{"రాలేకపోతున్నాము"}</span>
+                      </label>
+                    </div>
+                    <span className="rsvp-err" id="errAttending" role="alert" hidden></span>
+                  </div>
+                </div>
+                <div className="rsvp-field">
+                  <label className="rsvp-label" htmlFor="rsvpWish">{"మీ శుభాకాంక్షలు / దీవెనలు "}<span className="rsvp-optional">(ఐచ్ఛికం)</span></label>
+                  <textarea className="rsvp-input rsvp-textarea" id="rsvpWish" name="wish" rows="3" placeholder="తేజ & రెబెక్కా లకు మీ దీవెనలు, శుభాకాంక్షలు తెలపండి…" defaultValue={""} />
+                </div>
+                <div className="rsvp-submit-row">
+                  <button type="submit" className="btn btn--gold rsvp-submit" id="rsvpSubmit">
+                    <svg className="ico" aria-hidden="true"><use href="#i-heart"></use></svg>
+                    <span className="rsvp-submit__label">{"శుభాకాంక్షలు పంపండి"}</span>
+                    <span className="rsvp-submit__loading" hidden aria-label="పంపుతున్నాము…"><span className="rsvp-spinner" aria-hidden="true"></span></span>
+                  </button>
+                  <p className="rsvp-err rsvp-err--submit" id="errSubmit" role="alert" hidden></p>
+                </div>
+              </form>
+            </div>
+            <div className="wishes-section reveal" data-delay="2">
+              <div className="sec-head" style={{ marginTop: "clamp(52px,9vw,80px)" }}>
+                <p className="kicker">ఆత్మీయుల ఆశీస్సులు</p>
+                <h2 className="sec-title" style={{ fontSize: "clamp(22px,5vw,38px)" }}>దీవెనల గోడ</h2>
+                <div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-rose"></use></svg><span className="divider-line"></span></div>
+              </div>
+              <div className="wishes-wall" id="wishesWall">
+                <p className="wishes-empty" id="wishesEmpty">నూతన వధూవరులకు మీ శుభాకాంక్షలు తెలిపిన మొదటి వ్యక్తి మీరే అవ్వండి!</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        {/* FINALE / THANK YOU */}
+        <section id="thankyou" className="scene scene--flow scene--finale">
+          <img className="section-bg" src="assets/images/decorations/wash-finale.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content section-content--center">
+            <div className="finale-glow" aria-hidden="true"></div>
+            <div className="finale-stage" id="finaleStage">
+              <p className="finale-fallback" id="finaleFallback">ధన్యవాదాలు</p>
+            </div>
+            <p className="finale-sub reveal">మా వివాహ వేడుకలో భాగమైనందుకు కృతజ్ఞతలు</p>
+            <p className="finale-blessing reveal" data-delay="1">{" \"సర్వేశ్వరుని ఆశీస్సులతో నూతన దంపతులు కలకాలం సుఖసంతోషాలతో వర్ధిల్లాలని ఆకాంక్షిస్తూ...\" "}</p>
+          </div>
+        </section>
 
+        {/* FOOTER */}
+        <footer id="footer" className="scene scene--flow scene--finale footer">
+          <img className="section-bg" src="assets/images/decorations/wash-finale.svg" alt="" loading="lazy" decoding="async" />
+          <div className="section-overlay" aria-hidden="true"></div>
+          <div className="section-content section-content--center">
+            <div className="gratitude-card reveal">
+              <div className="divider divider--light divider--sm" aria-hidden="true">
+                <span className="divider-line"></span>
+                <svg className="ico" aria-hidden="true"><use href="#i-ring"></use></svg>
+                <span className="divider-line"></span>
+              </div>
+              <p className="gratitude-kicker" style={{ marginTop: "20px" }}>ఆహ్వానించువారు</p>
+              <p className="gratitude-msg">{"మా కుటుంబ శుభకార్యానికి విచ్చేసి, నూతన వధూవరులను నిండు మనస్సుతో ఆశీర్వదించాలని సవినయంగా కోరుకుంటున్నాము."}</p>
+              <p className="gratitude-names">{"దేవరం తేజ & యాండవ రెబెక్కా"}</p>
+              <p className="gratitude-date">బుధవారం, 18 నవంబర్ 2026</p>
+              <div className="divider divider--light divider--sm" style={{ margin: "22px auto" }} aria-hidden="true">
+                <span className="divider-line"></span>
+                <svg className="ico" aria-hidden="true"><use href="#i-leaf"></use></svg>
+                <span className="divider-line"></span>
+              </div>
+              <p className="gratitude-kicker">సంప్రదించవలసిన నంబర్</p>
+              <p className="gratitude-rsvp-names">{"వివరాలకు సంప్రదించండి"}</p>
+              <div className="gratitude-phones">
+                <a href="tel:+919885253999" className="gratitude-phone">
+                  <svg className="ico" aria-hidden="true"><use href="#i-phone"></use></svg>
+                  <span>+91 98852 53999</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </main>
 
-<section id="reveal" aria-hidden="true"><video id="revealVideo" muted playsInline webkit-playsinline="" preload="auto" disablePictureInPicture="" controlsList="nodownload noplaybackrate noremoteplayback"><source src="assets/video/invitation-reveal.mp4" type="video/mp4" /></video><div className="reveal-fade" aria-hidden="true"></div><button id="skipBtn" className="btn-skip" type="button" hidden>Skip</button></section>
+      {/* AUDIO */}
+      <audio id="bgAudio" src="assets/audio/music.mp3" preload="auto" loop playsInline></audio>
 
-
-
-<main id="site"><section id="hero" className="scene scene--screen scene--hero" aria-busy="true"><picture className="section-bg"><source id="heroSourceAvif" type="image/avif" data-hero-srcset="assets/images/hero/hero.avif" /><source id="heroSourceWebp" type="image/webp" data-hero-srcset="assets/images/hero/hero.webp" /><img id="heroImg" className="section-bg" data-candidates="assets/images/hero/hero-alt.png,assets/images/hero/hero.png,assets/images/hero/hero.webp,assets/images/hero/hero.avif" alt="" width="1080" height="1920" decoding="async" fetchPriority="high" /></picture><div className="section-overlay" aria-hidden="true"></div><p className="hero-bless hero-bless--top"><span className="hero-bless__en">With the Blessings of God Almighty</span></p><div className="section-content"><div className="divider divider--sm hero-divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true" style={{ width: "20px", height: "20px" }}><use href="#i-cross"></use></svg><span className="divider-line"></span></div><h1 className="hero-names"><span className="hero-names__n">Anitta Varghese</span><span className="hero-names__amp" aria-hidden="true">{"&"}</span><span className="hero-names__n">Sunny Philip</span></h1><p className="hero-date"><span className="hero-date__en">Wednesday · 26 August 2026</span></p></div><p className="hero-subtitle">Lourde Matha Syro Malabar Church, Mamood  ·  12:00 Noon</p><a className="scroll-indicator" href="#details" aria-label="Scroll to wedding details"><span className="scroll-indicator__word">Scroll</span><svg className="scroll-indicator__arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5v14M5 13l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg></a></section><section id="verse" className="scene scene--flow scene--ivory"><img className="section-bg" src="assets/images/decorations/wash-ivory.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content section-content--center"><div className="verse-card reveal"><svg className="ico verse-cross" aria-hidden="true"><use href="#i-cross"></use></svg><blockquote className="verse-text">{" \"Therefore what God has joined together"}<br />{" Let no one separate.\" "}</blockquote><cite className="verse-ref">— Mark 10:9</cite><div className="divider divider--sm" style={{ marginTop: "24px" }} aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-leaf"></use></svg><span className="divider-line"></span></div></div></div></section><section id="details" className="scene scene--flow scene--beige"><img className="section-bg" src="assets/images/decorations/wash-beige.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content"><div className="sec-head reveal"><p className="kicker">The Invitation</p><h2 className="sec-title">Betrothal Details</h2><div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-cross"></use></svg><span className="divider-line"></span></div></div><p className="lede reveal" data-delay="1">{" Mrs. Thankamma Varghese cordially invites your esteemed presence with family on the auspicious occasion of the betrothal of her daughter "}<em>Anitta Varghese</em>{" with "}<em>Sunny Philip</em>{". Your gracious presence and heartfelt blessings will make our celebration truly memorable. "}</p><ul className="facts"><li className="fact reveal" data-delay="1"><svg className="ico" aria-hidden="true"><use href="#i-calendar"></use></svg><span className="fact-k">Betrothal Day</span><span className="fact-v">Wednesday, 26 August 2026</span><span className="fact-s">26th August 2026</span></li><li className="fact reveal" data-delay="2"><svg className="ico" aria-hidden="true"><use href="#i-clock"></use></svg><span className="fact-k">Time</span><span className="fact-v">12:00 Noon</span><span className="fact-s">Followed by lunch</span></li><li className="fact reveal" data-delay="3"><svg className="ico" aria-hidden="true"><use href="#i-church"></use></svg><span className="fact-k">Church</span><span className="fact-v">Lourde Matha Syro Malabar Church</span><span className="fact-s">Mamood, Kerala</span></li><li className="fact reveal" data-delay="4"><svg className="ico" aria-hidden="true"><use href="#i-bell"></use></svg><span className="fact-k">Lunch</span><span className="fact-v">Church Parish Hall</span><span className="fact-s">Following the ceremony</span></li></ul><div className="countdown reveal" data-delay="2" aria-label="Countdown to the wedding day"><div className="cd-unit"><span className="cd-n" id="cdD">--</span><span className="cd-l">Days</span></div><span className="cd-sep" aria-hidden="true"></span><div className="cd-unit"><span className="cd-n" id="cdH">--</span><span className="cd-l">Hours</span></div><span className="cd-sep" aria-hidden="true"></span><div className="cd-unit"><span className="cd-n" id="cdM">--</span><span className="cd-l">Minutes</span></div><span className="cd-sep" aria-hidden="true"></span><div className="cd-unit"><span className="cd-n" id="cdS">--</span><span className="cd-l">Seconds</span></div></div></div></section><section id="timeline" className="scene scene--flow scene--ivory"><img className="section-bg" src="assets/images/decorations/wash-ivory.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content"><div className="sec-head reveal"><p className="kicker">The Celebrations</p><h2 className="sec-title">Our Journey</h2><div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-heart"></use></svg><span className="divider-line"></span></div></div><ol className="tl"><li className="tl-item reveal" data-delay="1"><span className="tl-node" aria-hidden="true"><svg className="ico"><use href="#i-heart"></use></svg></span><div className="tl-body"><p className="tl-date">Saturday, 18 April 2026</p><h3 className="tl-title">Marriage Fixed</h3><p className="tl-meta">Korakkan House, Kurichilakode, Kodanad</p><p className="tl-text">{" Two families came together with joy and gratitude as the marriage of Anitta Varghese and Sunny Philip was formally fixed, uniting both households in love and faith. "}</p></div></li><li className="tl-item reveal" data-delay="2"><span className="tl-node" aria-hidden="true"><svg className="ico"><use href="#i-ring"></use></svg></span><div className="tl-body"><p className="tl-date">Wednesday, 26 August 2026</p><h3 className="tl-title">Betrothal</h3><p className="tl-meta">12:00 Noon · Lourde Matha Syro Malabar Church, Mamood</p><p className="tl-text">{" The sacred betrothal ceremony — a joyful exchange of promises before God and family — marking the blessed beginning of a lifetime together. "}</p><div className="tl-actions"><a className="btn btn--gold btn--sm" target="_blank" rel="noopener" href="https://maps.app.goo.gl/9zmjPSxMVb9onj3E7"><svg className="ico"><use href="#i-pin"></use></svg>{" View Location "}</a></div></div></li><li className="tl-item reveal" data-delay="3"><span className="tl-node" aria-hidden="true"><svg className="ico"><use href="#i-bell"></use></svg></span><div className="tl-body"><p className="tl-date">Wednesday, 26 August 2026</p><h3 className="tl-title">Lunch</h3><p className="tl-meta">Church Parish Hall, Mamood</p><p className="tl-text">{" A festive lunch reception at the Church Parish Hall — a time to celebrate, share a meal, and bless the couple as they begin their journey together. "}</p><div className="tl-actions"></div></div></li><li className="tl-item reveal" data-delay="4"><span className="tl-node tl-node--hi" aria-hidden="true"><svg className="ico"><use href="#i-church"></use></svg></span><div className="tl-body"><p className="tl-date">Saturday, 29 August 2026</p><h3 className="tl-title">Wedding Ceremony</h3><p className="tl-meta">{"11:00 AM · St. Antony's Syro-Malabar Church, Kodanad"}</p><p className="tl-text">{" The sacred wedding ceremony solemnised according to the Syro-Malabar Catholic rite at St. Antony's Church, Kodanad — a union blessed by God and witnessed by family and loved ones. "}</p><div className="tl-actions"><a className="btn btn--gold btn--sm" target="_blank" rel="noopener" href="https://share.google/CmkgMtm2nljtOotRE"><svg className="ico"><use href="#i-pin"></use></svg>{" View Location "}</a></div></div></li></ol></div></section><section id="couple" className="scene scene--flow scene--dark"><img className="section-bg" src="assets/images/decorations/wash-dark.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content"><div className="sec-head reveal"><h2 className="sec-title">{"Bride & Groom"}</h2><div className="divider divider--light" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-ring"></use></svg><span className="divider-line"></span></div></div><div className="couple-photo-wrap reveal"><div className="couple-photo-frame"><img className="couple-photo-img" loading="lazy" decoding="async" src="assets/images/gallery/Couple.jpeg" data-fallbacks="assets/images/gallery/Couple.jpg,assets/images/gallery/couple.jpeg,assets/images/gallery/couple.jpg" data-placeholder="Anitta & Sunny" alt="Anitta Varghese and Sunny Philip together" /><span className="couple-photo-ring" aria-hidden="true"></span></div></div><div className="couple-grid"><article className="person reveal" data-delay="2"><p className="person-role">The Bride</p><h3 className="person-name">Anitta Varghese</h3><p className="person-line">Daughter of Late Varghese P. M.<br />{" & Mrs. Thankamma Varghese"}</p><p className="person-place">Pathickal House, Mammood<br />Kerala</p></article><div className="couple-knot" aria-hidden="true"><span className="couple-initial">A</span><svg className="ico" aria-hidden="true"><use href="#i-ring"></use></svg><span className="couple-initial">S</span></div><article className="person reveal" data-delay="1"><p className="person-role">The Groom</p><h3 className="person-name">Sunny Philip</h3><p className="person-line">Son of Late Philip K. A.<br />{" & Mrs. Mercy Philip"}</p><p className="person-place">Korakkan House, Kurichilakode<br />Kodanad, Kerala</p></article></div></div></section><section id="family" className="scene scene--flow scene--beige"><img className="section-bg" src="assets/images/decorations/wash-beige.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content"><div className="sec-head reveal"><p className="kicker">{"With Love & Blessings"}</p><h2 className="sec-title">{"Parents & Family"}</h2><div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-cross"></use></svg><span className="divider-line"></span></div></div><div className="family-grid"><article className="card card--family reveal" data-delay="1"><svg className="ico card-ico" aria-hidden="true"><use href="#i-pillar"></use></svg><p className="family-tag">{"Bride's Family"}</p><h3 className="family-name">Late Varghese P. M.</h3><p className="family-amp">{"&"}</p><h3 className="family-name">Mrs. Thankamma Varghese</h3><p className="family-home">Pathickal House, Mammood<br />Kerala</p></article><article className="card card--family reveal" data-delay="2"><svg className="ico card-ico" aria-hidden="true"><use href="#i-pillar"></use></svg><p className="family-tag">{"Groom's Family"}</p><h3 className="family-name">Late Philip K. A.</h3><p className="family-amp">{"&"}</p><h3 className="family-name">Mrs. Mercy Philip</h3><p className="family-home">Korakkan House, Kurichilakode<br />Kodanad, Kerala</p></article></div><p className="family-foot reveal" data-delay="3"><svg className="ico" aria-hidden="true"><use href="#i-leaf"></use></svg>{" Together with their families, relatives and well-wishers. "}</p></div></section><section id="venue" className="scene scene--flow scene--ivory"><img className="section-bg" src="assets/images/decorations/wash-ivory.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content"><div className="sec-head reveal"><p className="kicker">Find Your Way</p><h2 className="sec-title">{"Venue & Directions"}</h2><div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-pin"></use></svg><span className="divider-line"></span></div></div><div className="venue-grid"><article className="venue-card reveal" data-delay="1"><div className="venue-map-embed"><iframe title="Lourde Matha Syro Malabar Church, Mamood" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3927.1!2d76.6115247!3d9.4797559!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b062f914d4a88fd%3A0x1cf41f15427a54c6!2sLourde+Matha+Syro+Malabar+Church+%7C+Mammood!5e0!3m2!1sen!2sin!4v1753952000000!5m2!1sen!2sin" width="100%" height="220" style={{ border: "0", display: "block" }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe></div><div className="venue-body"><p className="venue-tag">Betrothal Ceremony</p><h3 className="venue-name">Lourde Matha Syro Malabar Church</h3><p className="venue-addr">Mamood<br />Kerala, India</p><p className="venue-when"><svg className="ico"><use href="#i-clock"></use></svg>{" Wed, 26 Aug 2026 · 12:00 Noon"}</p><div className="venue-actions"><a className="btn btn--gold" target="_blank" rel="noopener" href="https://maps.app.goo.gl/9zmjPSxMVb9onj3E7"><svg className="ico"><use href="#i-pin"></use></svg>{" Open in Maps"}</a></div></div></article><article className="venue-card reveal" data-delay="2"><div className="venue-map-embed"><iframe title="Church Parish Hall, Mamood" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3927.1!2d76.6115247!3d9.4797559!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b0807fd711276fb%3A0x4716f0bc1eddc9bc!2sChurch+Parish+Hall%2C+Thannipuzha!5e0!3m2!1sen!2sin!4v1753952000001!5m2!1sen!2sin" width="100%" height="220" style={{ border: "0", display: "block" }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe></div><div className="venue-body"><p className="venue-tag">Lunch</p><h3 className="venue-name">Church Parish Hall</h3><p className="venue-addr">Mamood<br />Kerala, India</p><p className="venue-when"><svg className="ico"><use href="#i-bell"></use></svg>{" Following the ceremony"}</p><div className="venue-actions"><a className="btn btn--gold" target="_blank" rel="noopener" href="https://maps.app.goo.gl/r1gy5Fz7Au5V7d6S8"><svg className="ico"><use href="#i-pin"></use></svg>{" Open in Maps"}</a></div></div></article></div></div></section><section id="rsvp" className="scene scene--flow scene--beige"><img className="section-bg" src="assets/images/decorations/wash-beige.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content"><div className="sec-head reveal"><p className="kicker">Join Us</p><h2 className="sec-title">RSVP</h2><div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-heart"></use></svg><span className="divider-line"></span></div><p className="sec-note" style={{ marginTop: "14px" }}>{" Please let us know if you will be joining us on our special day. Kindly respond by "}<strong>20 August 2026</strong>{". "}</p></div><div className="rsvp-card reveal" data-delay="1"><div className="rsvp-success" id="rsvpSuccess" hidden><svg className="ico rsvp-success__ico" aria-hidden="true"><use href="#i-heart"></use></svg><p className="rsvp-success__title">Thank you!</p><p className="rsvp-success__msg">We look forward to celebrating with you.</p></div><form id="rsvpForm" className="rsvp-form" noValidate><div className="rsvp-row"><div className="rsvp-field"><label className="rsvp-label" htmlFor="rsvpName">{"Full Name "}<span aria-hidden="true">*</span></label><input className="rsvp-input" id="rsvpName" name="name" type="text" placeholder="Your full name" autoComplete="name" required /><span className="rsvp-err" id="errName" role="alert" hidden></span></div><div className="rsvp-field"><label className="rsvp-label" htmlFor="rsvpPhone">{"Phone Number "}<span aria-hidden="true">*</span></label><input className="rsvp-input" id="rsvpPhone" name="phone" type="tel" placeholder="+91 98765 43210" autoComplete="tel" required /><span className="rsvp-err" id="errPhone" role="alert" hidden></span></div></div><div className="rsvp-row"><div className="rsvp-field"><label className="rsvp-label" htmlFor="rsvpGuests">{"Number of Guests "}<span aria-hidden="true">*</span></label><select className="rsvp-input rsvp-select" id="rsvpGuests" name="guests" required><option value="" disabled selected>Select guests</option><option value="1">1 — Just me</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6+">6 or more</option></select><span className="rsvp-err" id="errGuests" role="alert" hidden></span></div><div className="rsvp-field"><label className="rsvp-label">{"Attending? "}<span aria-hidden="true">*</span></label><div className="rsvp-radio-group" role="radiogroup" aria-label="Attending?"><label className="rsvp-radio"><input type="radio" name="attending" defaultValue="Yes" required /><span className="rsvp-radio__mark" aria-hidden="true"></span><span>Yes, with joy!</span></label><label className="rsvp-radio"><input type="radio" name="attending" defaultValue="No" /><span className="rsvp-radio__mark" aria-hidden="true"></span><span>{"Sorry, can't make it"}</span></label></div><span className="rsvp-err" id="errAttending" role="alert" hidden></span></div></div><div className="rsvp-field"><label className="rsvp-label" htmlFor="rsvpWish">{"Your Wishes "}<span className="rsvp-optional">(optional)</span></label><textarea className="rsvp-input rsvp-textarea" id="rsvpWish" name="wish" rows="3" placeholder="Write a blessing or wish for Anitta & Sunny…" defaultValue={""} /></div><div className="rsvp-submit-row"><button type="submit" className="btn btn--gold rsvp-submit" id="rsvpSubmit"><svg className="ico" aria-hidden="true"><use href="#i-heart"></use></svg><span className="rsvp-submit__label">{"Send RSVP & Wish"}</span><span className="rsvp-submit__loading" hidden aria-label="Sending…"><span className="rsvp-spinner" aria-hidden="true"></span></span></button><p className="rsvp-err rsvp-err--submit" id="errSubmit" role="alert" hidden></p></div></form></div><div className="wishes-section reveal" data-delay="2"><div className="sec-head" style={{ marginTop: "clamp(52px,9vw,80px)" }}><p className="kicker">Blessings from Loved Ones</p><h2 className="sec-title" style={{ fontSize: "clamp(22px,5vw,38px)" }}>Wishes Wall</h2><div className="divider" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-rose"></use></svg><span className="divider-line"></span></div></div><div className="wishes-wall" id="wishesWall"><p className="wishes-empty" id="wishesEmpty">Be the first to leave a wish for the couple!</p></div></div></div></section><section id="thankyou" className="scene scene--flow scene--finale"><img className="section-bg" src="assets/images/decorations/wash-finale.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content section-content--center"><div className="finale-glow" aria-hidden="true"></div><div className="finale-stage" id="finaleStage"><p className="finale-fallback" id="finaleFallback">THANK YOU</p></div><p className="finale-sub reveal">for being a part of our story</p><p className="finale-blessing reveal" data-delay="1">{" \"May God bless this union abundantly.\" "}</p></div></section><footer id="footer" className="scene scene--flow scene--finale footer"><img className="section-bg" src="assets/images/decorations/wash-finale.svg" alt="" loading="lazy" decoding="async" /><div className="section-overlay" aria-hidden="true"></div><div className="section-content section-content--center"><div className="gratitude-card reveal"><div className="divider divider--light divider--sm" aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-cross"></use></svg><span className="divider-line"></span></div><p className="gratitude-kicker" style={{ marginTop: "20px" }}>Sharing the Happiness</p><p className="gratitude-msg">{" We cordially invite you to be part of our journey and seek your presence and blessings as we begin our new life together in the grace of God. "}</p><p className="gratitude-names">{"Anitta & Sunny"}</p><p className="gratitude-date">Wednesday, 26 August 2026</p><div className="divider divider--light divider--sm" style={{ margin: "22px auto" }} aria-hidden="true"><span className="divider-line"></span><svg className="ico" aria-hidden="true"><use href="#i-leaf"></use></svg><span className="divider-line"></span></div><p className="gratitude-kicker">RSVP · Contact</p><p className="gratitude-rsvp-names">{"Fr. Tison & Tijo"}</p><div className="gratitude-phones"><a href="tel:+918190092489" className="gratitude-phone"><svg className="ico" aria-hidden="true"><use href="#i-phone"></use></svg><span>+91 81900 92489</span></a></div></div></div></footer></main>
-
-
-
-<audio id="bgAudio" src="assets/audio/music.mp3" preload="auto" loop playsInline></audio>
-
-<button id="audioBtn" className="audio-disc" type="button" aria-pressed="false" aria-label="Play music" hidden><span className="audio-disc__glow" aria-hidden="true"></span><span className="audio-disc__ring" aria-hidden="true"></span><span className="audio-disc__platter" aria-hidden="true"><span className="audio-disc__grooves"></span><span className="audio-disc__hub"><span className="audio-disc__mono">{"A&S"}</span></span></span><span className="audio-disc__icon" aria-hidden="true"><svg className="audio-disc__play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5L8 5.5z"></path></svg><svg className="audio-disc__pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg></span></button>
-
-
-
-
-
-
-
+      <button id="audioBtn" className="audio-disc" type="button" aria-pressed="false" aria-label="సంగీతాన్ని ఆన్ లేదా ఆఫ్ చేయండి" hidden>
+        <span className="audio-disc__glow" aria-hidden="true"></span>
+        <span className="audio-disc__ring" aria-hidden="true"></span>
+        <span className="audio-disc__platter" aria-hidden="true">
+          <span className="audio-disc__grooves"></span>
+          <span className="audio-disc__hub"><span className="audio-disc__mono">{"T&R"}</span></span>
+        </span>
+        <span className="audio-disc__icon" aria-hidden="true">
+          <svg className="audio-disc__play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5L8 5.5z"></path></svg>
+          <svg className="audio-disc__pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
+        </span>
+      </button>
     </>
   )
 }
